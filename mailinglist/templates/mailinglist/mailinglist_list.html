@@ -5,7 +5,17 @@ Mailing List - {{ block.super }}
 {% endblock title %}
 
 {% block content %}
-<div class="container">
-    <h2>Your mailing list</h2>
+<div class="container py-3">
+  <h2>Your Mailing Lists</h2>
+  <a href="" class="btn btn-primary">New List</a>
+
+  <div class="pt-4">
+    <p class="lead">Your mailing lists:</p>
+    <ul>
+      {% for mailinglist in object_list %}
+      <li><a href="">{{ mailinglist.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 {% endblock content %}
