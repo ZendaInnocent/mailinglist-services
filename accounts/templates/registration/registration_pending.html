@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Pending Registration - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="col-md-6 offset-md-3" style="padding-top: 150px; height: 100vh;">
+
+    <h3>
+        Thank you for registering your account.
+    </h3>
+    <p class="lead">
+        A confirmation email has been sent to your email. Please confirm to finish registration.
+    </p>
+</div>
+{% endblock %}

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts.apps.AccountsConfig',
     'mailinglist',
 
     'crispy_forms',
@@ -128,3 +129,9 @@ STATICFILES_DIRS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+AUTH_USER_MODEL = 'accounts.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_mails')
