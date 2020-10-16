@@ -3,20 +3,27 @@ from django.urls.base import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from mailinglist.forms import MailingListForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from mailinglist.models import MailingList
+from mailinglist.forms import MailingListForm
 
 
-class MailinglistListView(ListView):
+class MailinglistListView(LoginRequiredMixin, ListView):
     model = MailingList
 
+    def get_queryset(self):
+        return MailingList.objects.filter(owner=self.request.user)
 
-class MailinglistDetailView(DetailView):
+
+class MailinglistDetailView(LoginRequiredMixin, DetailView):
     model = MailingList
 
+    def get_queryset(self):
+        return MailingList.objects.filter(owner=self.request.user)
 
-class MailingListCreateView(CreateView):
+
+class MailingListCreateView(LoginRequiredMixin, CreateView):
     model = MailingList
     form_class = MailingListForm
 
@@ -30,9 +37,12 @@ class MailingListCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MailinglistUpdateView(UpdateView):
+class MailinglistUpdateView(LoginRequiredMixin, UpdateView):
     model = MailingList
     form_class = MailingListForm
+
+    def get_queryset(self):
+        return MailingList.objects.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,6 +50,9 @@ class MailinglistUpdateView(UpdateView):
         return context
 
 
-class MailinglistDeleteView(DeleteView):
+class MailinglistDeleteView(LoginRequiredMixin, DeleteView):
     model = MailingList
     success_url = reverse_lazy('mailinglist:mailinglist-list')
+
+    def get_queryset(self):
+        return MailingList.objects.filter(owner=self.request.user)
