@@ -16,6 +16,9 @@ class MailingList(models.Model):
     def can_user_use_mailing_list(self, user):
         return user == self.owner
 
+    def get_absolute_url(self):
+        return reverse('mailinglist:mailinglist-detail', kwargs={'pk': self.id})
+
 
 class Subscriber(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
