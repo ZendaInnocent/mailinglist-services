@@ -1,12 +1,11 @@
-from django.shortcuts import render
-from django.urls.base import reverse_lazy
+from django.urls.base import reverse_lazy, reverse
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from mailinglist.models import MailingList
-from mailinglist.forms import MailingListForm
+from mailinglist.models import MailingList, Subscriber
+from mailinglist.forms import MailingListForm, SubscriberForm
 
 
 class MailinglistListView(LoginRequiredMixin, ListView):
@@ -56,3 +55,28 @@ class MailinglistDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return MailingList.objects.filter(owner=self.request.user)
+
+
+class SubscribeToMailingListView(CreateView):
+    model = Subscriber
+    form_class = SubscriberForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['mailinglist'] = MailingList.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        mailinglist = MailingList.objects.get(pk=self.kwargs['pk'])
+        form.instance.mailing_list = mailinglist
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('mailinglist:subscriber-thank-you', kwargs={
+            'pk': self.kwargs['pk']
+        })
+
+
+class ThankYouForSubscribingView(DetailView):
+    model = MailingList
+    template_name = 'mailinglist/subscription_thank_you.html'

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Thank you for subscribing to {{ object.name }} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="container py-3">
+  <h1>Thank you for subscribing to {{ object.name }}</h1>
+  <p class="lead">
+    Please check your email for confimation mail.
+  </p>
+</div>
+{% endblock content %}

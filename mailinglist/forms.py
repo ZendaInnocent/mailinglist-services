@@ -14,4 +14,4 @@ class SubscriberForm(forms.ModelForm):
 
     class Meta:
         model = Subscriber
-        fields = ['mailing_list', 'email', ]
+        fields = ['email', ]
