@@ -23,4 +23,6 @@ urlpatterns = [
          views.ConfirmSubscriptionView.as_view(), name='confirm-subscription'),
     path('unsubscribe/<uuid:pk>/', views.UnsubscribeView.as_view(),
          name='unsubscribe'),
+    path('<uuid:pk>/message/new/', views.MessageCreateView.as_view(),
+         name='message-create'),
 ]

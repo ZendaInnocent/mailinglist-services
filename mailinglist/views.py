@@ -2,10 +2,11 @@ from django.urls.base import reverse_lazy, reverse
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404
 
-from mailinglist.models import MailingList, Subscriber
-from mailinglist.forms import MailingListForm, SubscriberForm
+from mailinglist.models import MailingList, Message, Subscriber
+from mailinglist.forms import MailingListForm, MessageForm, SubscriberForm
 
 
 class MailinglistListView(LoginRequiredMixin, ListView):
@@ -100,4 +101,42 @@ class UnsubscribeView(DeleteView):
     def get_success_url(self):
         return reverse('mailinglist:subscribe', kwargs={
             'pk': self.object.mailing_list.id
+        })
+
+
+class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    SAVE_ACTION = 'save'
+    PREVIEW_ACTION = 'preview'
+
+    model = Message
+    form_class = MessageForm
+
+    def test_func(self):
+        mailinglist = get_object_or_404(MailingList, pk=self.kwargs['pk'])
+        return mailinglist.owner == self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mailinglist'] = get_object_or_404(
+            MailingList, pk=self.kwargs['pk'])
+        context['SAVE_ACTION'] = self.SAVE_ACTION
+        context['PREVIEW_ACTION'] = self.PREVIEW_ACTION
+        return context
+
+    def form_valid(self, form):
+        action = self.request.POST.get('action')
+        if action == self.PREVIEW_ACTION:
+            context = self.get_context_data(
+                form=form,
+                preview=form.instance
+            )
+            return self.render_to_response(context=context)
+        elif action == self.SAVE_ACTION:
+            form.instance.mailing_list = get_object_or_404(
+                MailingList, pk=self.kwargs['pk'])
+            return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('mailinglist:mailinglist-detail', kwargs={
+            'pk': self.kwargs['pk']
         })

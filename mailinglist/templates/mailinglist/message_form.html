@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Send a message to {{ mailinglist }} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="container py-3">
+  <h1>Send a message to {{ mailinglist }}</h1>
+
+  {% if preview %}
+  <div class="card my-3">
+    <div class="card-header">
+      Message Preview
+    </div>
+
+    <div class="card-body">
+      <h5 class="card-title">
+        {{ preview.subject }}
+      </h5>
+      <div>
+        {{ preview.body }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <button class="btn btn-primary" name='action' value="{{ PREVIEW_ACTION }}">Preview</button>
+    <button class="btn btn-primary" name='action' value="{{ SAVE_ACTION }}">Save</button>
+  </form>
+</div>
+{% endblock content %}
