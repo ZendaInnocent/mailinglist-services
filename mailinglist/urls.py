@@ -7,6 +7,8 @@ app_name = 'mailinglist'
 
 urlpatterns = [
     path('', views.MailinglistListView.as_view(), name='mailinglist-list'),
+    path('add/', views.MailingListCreateView.as_view(),
+         name='mailinglist-create'),
     path('<pk>/', views.MailinglistDetailView.as_view(),
          name='mailinglist-detail'),
 ]
