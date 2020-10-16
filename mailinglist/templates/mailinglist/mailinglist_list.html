@@ -16,6 +16,8 @@ Mailing List - {{ block.super }}
       <li>
         <a href="{{ mailinglist.get_absolute_url }}">{{ mailinglist.name }}</a>
       </li>
+      {% empty %}
+      <p>No mailing list yet. Please add one.</p>
       {% endfor %}
     </ul>
   </div>

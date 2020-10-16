@@ -132,6 +132,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+LOGIN_REDIRECT_URL = 'mailinglist:mailinglist-list'
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_mails')
