@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.urls.base import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from mailinglist.forms import MailingListForm
 
 from mailinglist.models import MailingList
@@ -37,3 +38,8 @@ class MailinglistUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Edit'
         return context
+
+
+class MailinglistDeleteView(DeleteView):
+    model = MailingList
+    success_url = reverse_lazy('mailinglist:mailinglist-list')
