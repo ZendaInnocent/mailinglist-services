@@ -21,11 +21,20 @@ class MailingList(models.Model):
         return reverse('mailinglist:mailinglist-detail', kwargs={'pk': self.id})
 
 
+class SubscriberManager(models.Manager):
+
+    def confirmed_subscribers_for_mailinglist(self, mailing_list):
+        qs = self.get_queryset()
+        return qs.filter(confirmed=True, mailing_list=mailing_list)
+
+
 class Subscriber(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField()
     confirmed = models.BooleanField(default=False)
     mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE)
+
+    objects = SubscriberManager()
 
     class Meta:
         unique_together = ['email', 'mailing_list']

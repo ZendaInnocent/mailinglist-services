@@ -10,7 +10,7 @@
     <a class="btn btn-danger" href="{% url 'mailinglist:mailinglist-delete' object.id %}">Delete</a></h1>
 
   <div>
-    <a href="">Subscription Link</a>
+    <a href="{% url 'mailinglist:subscribe' object.id %}">Subscription Link</a>
   </div>
 
   <div>
@@ -26,6 +26,15 @@
 
   <div>
     <h2>Subscribers</h2>
+    <ul>
+      {% for subscriber in object.subscriber_set.all %}
+      <li>
+        {{ subscriber.email }}
+        {{ subscriber.confirmed | yesno | capfirst }}
+        <a href="{% url 'mailinglist:unsubscribe' subscriber.id %}">Unsubscribe</a>
+      </li>
+      {% endfor %}
+    </ul>
   </div>
 </div>
 {% endblock content %}
