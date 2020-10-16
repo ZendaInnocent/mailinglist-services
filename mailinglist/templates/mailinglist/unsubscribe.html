@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Unsubscribe from {{ subscriber.mailing_list }}? - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="container py-3">
+    <form method="post">
+        {% csrf_token %}
+        <p class="lead">
+            Are you sure you want to unsubscribe from {{ subscriber.mailing_list }}?
+        </p>
+        <button class="btn btn-danger">Yes, I want to unsubscribe</button>
+    </form>
+</div>
+{% endblock content %}
