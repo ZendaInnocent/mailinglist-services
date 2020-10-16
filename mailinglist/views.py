@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.urls.base import reverse_lazy, reverse
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -140,3 +141,11 @@ class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse('mailinglist:mailinglist-detail', kwargs={
             'pk': self.kwargs['pk']
         })
+
+
+class MessageDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Message
+
+    def test_func(self):
+        message = self.get_object()
+        return message.mailing_list.owner == self.request.user

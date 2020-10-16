@@ -13,9 +13,6 @@ class MailingList(models.Model):
     def __str__(self):
         return self.name
 
-    def can_user_use_mailing_list(self, user):
-        return user == self.owner
-
     def get_absolute_url(self):
         return reverse('mailinglist:mailinglist-detail', kwargs={'pk': self.id})
 
@@ -37,3 +34,6 @@ class Message(models.Model):
     body = models.TextField()
     started = models.DateTimeField(default=None, null=True)
     finished = models.DateTimeField(default=None, null=True)
+
+    def get_absolute_url(self):
+        return reverse('mailinglist:message-detail', kwargs={'pk': self.id})

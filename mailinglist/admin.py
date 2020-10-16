@@ -15,4 +15,4 @@ class SubscriberAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessagesAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'subject', 'mailing_list', )

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{{ object.subject }} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="container py-3">
+  <h1>{{ object.subject }}</h1>
+
+  <div>
+    {{ object.body }}
+  </div>
+</div>
+{% endblock content %}

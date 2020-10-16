@@ -15,7 +15,13 @@
 
   <div>
     <h2>Messages</h2>
-
+    <ul>
+      {% for message in object.message_set.all %}
+      <li>
+        <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
+      </li>
+      {% endfor %}
+    </ul>
   </div>
 
   <div>
