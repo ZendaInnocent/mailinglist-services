@@ -149,3 +149,6 @@ if not DEBUG:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_mails')
+
+MAILING_LIST_FROM_EMAIL = 'noreply@example.com'
+MAILING_LIST_LINK_DOMAIN = 'http://localhost:8000'
