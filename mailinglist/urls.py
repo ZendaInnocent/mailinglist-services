@@ -11,4 +11,6 @@ urlpatterns = [
          name='mailinglist-create'),
     path('<pk>/', views.MailinglistDetailView.as_view(),
          name='mailinglist-detail'),
+    path('<pk>/update/', views.MailinglistUpdateView.as_view(),
+         name='mailinglist-update'),
 ]

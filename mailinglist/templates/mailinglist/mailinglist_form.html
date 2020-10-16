@@ -7,11 +7,11 @@ Create Mailing List - {{ block.super }}
 
 {% block content %}
 <div class="container py-3">
-  <h1>Create Mailing List</h1>
+  <h1>{{ page_title }} Mailing List</h1>
   <form method="POST">
     {% csrf_token %}
     {{ form | crispy }}
-    <button class="btn btn-primary">Add Mailinglist</button>
+    <button class="btn btn-primary">{{ page_title }} Mailinglist</button>
   </form>
 </div>
 {% endblock content %}
