@@ -4,7 +4,10 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from mailinglist.emails import send_confirmation_email
+
 User = get_user_model()
+
 
 class MailingList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -26,6 +29,15 @@ class Subscriber(models.Model):
 
     class Meta:
         unique_together = ['email', 'mailing_list']
+
+    def send_confirmation_email(self):
+        return send_confirmation_email(self)
+
+    def save(self, *args, **kwargs):
+        # send confirmation email to new Subscriber
+        if self._state.adding:
+            self.send_confirmation_email()
+        return super().save(*args, **kwargs)
 
 
 class Message(models.Model):

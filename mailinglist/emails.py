@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.template import engine, Context
+from django.template import engines, Context
 from django.urls import reverse
 from django.core.mail import send_mail
 
 
-CONFIRM_SUBSCRIPTION_TEXT = 'mailinglist/email/confirmation.txt'
-CONFIRM_SUBSCRIPTION_HTML = 'mailinglist/email/confirmation.html'
+CONFIRM_SUBSCRIPTION_TEXT = 'mailinglist/email_templates/confirmation.txt'
+CONFIRM_SUBSCRIPTION_HTML = 'mailinglist/email_templates/confirmation.html'
 
 
 class EmailTemplateContext(Context):
@@ -29,10 +29,10 @@ class EmailTemplateContext(Context):
 
     @staticmethod
     def make_link(path):
-        return settings.MAIL_LIST_LINK_DOMAIN + path
+        return settings.MAILING_LIST_LINK_DOMAIN + path
 
 
-def send_email_confirmation(subscriber):
+def send_confirmation_email(subscriber):
     mailinglist = subscriber.mailing_list
     confirmation_link = EmailTemplateContext.make_link(
         reverse('mailinglist:confirm-subscription', kwargs={
@@ -43,7 +43,7 @@ def send_email_confirmation(subscriber):
                                    {'confirmation_link': confirmation_link})
     subject = f'Confirming subscription to {mailinglist.name}'
 
-    dt_engine = engine['django'].engine
+    dt_engine = engines['django'].engine
 
     text_body_template = dt_engine.get_template(CONFIRM_SUBSCRIPTION_TEXT)
     text_body = text_body_template.render(context)
