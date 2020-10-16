@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Thank you for subscribing to {{ subscriber.mailing_list }} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<div class="container py-3">
+    <h1>Subscription to {{ subscriber.mailing_list }} is confirmed!</h1>
+</div>
+{% endblock content %}

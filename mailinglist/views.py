@@ -80,3 +80,14 @@ class SubscribeToMailingListView(CreateView):
 class ThankYouForSubscribingView(DetailView):
     model = MailingList
     template_name = 'mailinglist/subscription_thank_you.html'
+
+
+class ConfirmSubscriptionView(DetailView):
+    model = Subscriber
+    template_name = 'mailinglist/confirm_subscription.html'
+
+    def get_object(self):
+        subscriber = super().get_object()
+        subscriber.confirmed = True
+        subscriber.save()
+        return subscriber
