@@ -1,3 +1,4 @@
+django
 django-markdownify
 django-crispy-forms
-django
+django-celery-results
