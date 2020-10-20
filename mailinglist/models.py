@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from mailinglist.emails import send_confirmation_email
+from mailinglist import tasks
 
 User = get_user_model()
 
@@ -40,7 +40,7 @@ class Subscriber(models.Model):
         unique_together = ['email', 'mailing_list']
 
     def send_confirmation_email(self):
-        return send_confirmation_email(self)
+        return tasks.send_confirmation_email_to_subscriber.delay(self.id)
 
     def save(self, *args, **kwargs):
         # send confirmation email to new Subscriber

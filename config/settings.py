@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from typing import cast
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -152,3 +151,7 @@ else:
 
 MAILING_LIST_FROM_EMAIL = 'noreply@example.com'
 MAILING_LIST_LINK_DOMAIN = 'http://localhost:8000'
+
+CELERY_BROKER_URL = 'amqp://localhost/'
+
+# CELERY_RESULT_BACKEND = 'django-db'
