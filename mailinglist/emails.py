@@ -2,10 +2,14 @@ from django.conf import settings
 from django.template import engines, Context
 from django.urls import reverse
 from django.core.mail import send_mail
+from django.utils import timezone
 
 
 CONFIRM_SUBSCRIPTION_TEXT = 'mailinglist/email_templates/confirmation.txt'
 CONFIRM_SUBSCRIPTION_HTML = 'mailinglist/email_templates/confirmation.html'
+
+SUBSCRIBER_MESSAGE_TEXT = 'mailinglist/email_templates/subscriber_message.txt'
+SUBSCRIBER_MESSAGE_HTML = 'mailinglist/email_templates/subscriber_message.html'
 
 
 class EmailTemplateContext(Context):
@@ -58,3 +62,37 @@ def send_confirmation_email(subscriber):
         recipient_list=[subscriber.email, ],
         html_message=html_body
     )
+
+
+def send_subscriber_message(subscriber_message):
+    message = subscriber_message.message
+    # build context for email temlates
+    context = EmailTemplateContext(
+        subscriber_message.subscriber, {'body': message.body})
+
+    dt_engine = engines['django'].engine
+
+    # render text and html versions of the email using Django Template engine
+    text_body_template = dt_engine.get_template(SUBSCRIBER_MESSAGE_TEXT)
+    text_body = text_body_template.render(context)
+
+    html_body_template = dt_engine.get_template(SUBSCRIBER_MESSAGE_HTML)
+    html_body = html_body_template.render(context)
+
+    # record the time of the last send attempt
+    subscriber_message.last_attempt = timezone.now()
+    subscriber_message.save()
+
+    # send the email
+    success = send_mail(
+        subject=message.subject,
+        message=text_body,
+        from_email=settings.MAILING_LIST_FROM_EMAIL,
+        recipient_list=[subscriber_message.subscriber.email, ],
+        html_message=html_body
+    )
+
+    # if email is successful sent, record the time sent.
+    if success == 1:
+        subscriber_message.sent = timezone.now()
+        subscriber_message.save()

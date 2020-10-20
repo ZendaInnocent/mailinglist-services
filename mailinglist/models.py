@@ -89,7 +89,7 @@ class SubscriberMessage(models.Model):
     objects = SubscriberMessageManager()
 
     def send(self):
-        tasks.send_subscriber_email.delay(self.id)
+        tasks.send_subscriber_message.delay(self.id)
 
     def save(self, *args, **kwargs):
         if self._state.adding:
