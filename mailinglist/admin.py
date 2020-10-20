@@ -10,7 +10,7 @@ class MailingListAdmin(admin.ModelAdmin):
 
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('email', 'mailing_list', 'confirmed', )
 
 
 @admin.register(Message)

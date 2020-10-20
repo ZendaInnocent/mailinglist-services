@@ -36,7 +36,7 @@ def send_confirmation_email(subscriber):
     mailinglist = subscriber.mailing_list
     confirmation_link = EmailTemplateContext.make_link(
         reverse('mailinglist:confirm-subscription', kwargs={
-            'pk': mailinglist.id
+            'pk': subscriber.id
         })
     )
     context = EmailTemplateContext(subscriber,
