@@ -14,8 +14,8 @@
   </div>
 
   <div>
-    <h2>Messages</h2>
-    <ul>
+    <h2>Messages</h2> <a class="btn btn-success" href="{% url 'mailinglist:message-create' object.id %}">New Message</a>
+    <ul class="pt-3">
       {% for message in object.message_set.all %}
       <li>
         <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>

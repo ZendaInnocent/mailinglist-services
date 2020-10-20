@@ -59,3 +59,34 @@ class Message(models.Model):
 
     def get_absolute_url(self):
         return reverse('mailinglist:message-detail', kwargs={'pk': self.id})
+
+
+class SubscriberMessageManager(models.Manager):
+
+    def create_from_message(self, message):
+        confirmed_subs = Subscriber.objects. \
+            confirmed_subscribers_for_mailinglist(message.mailing_list)
+        return [self.create(message=message, subscriber=subscriber)
+                for subscriber in confirmed_subs]
+
+
+class SubscriberMessage(models.Model):
+    """A model to track whether email is successful sent
+    to a `Subscriber` model.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    sent = models.DateTimeField(null=True, default=None)
+    last_attempt = models.DateTimeField(null=True, default=None)
+
+    objects = SubscriberMessageManager()
+
+    def send(self):
+        tasks.send_subscriber_email.delay(self.id)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.send()
+        return super().save(*args, **kwargs)
