@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MailingList, Message, Subscriber
+from .models import MailingList, Message, Subscriber, SubscriberMessage
 
 
 @admin.register(MailingList)
@@ -16,3 +16,8 @@ class SubscriberAdmin(admin.ModelAdmin):
 @admin.register(Message)
 class MessagesAdmin(admin.ModelAdmin):
     list_display = ('id', 'subject', 'mailing_list', )
+
+
+@admin.register(SubscriberMessage)
+class SubscriberMessageAdmin(admin.ModelAdmin):
+    pass

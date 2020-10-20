@@ -18,7 +18,8 @@ class MailingList(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('mailinglist:mailinglist-detail', kwargs={'pk': self.id})
+        return reverse('mailinglist:mailinglist-detail',
+                       kwargs={'pk': self.id})
 
 
 class SubscriberManager(models.Manager):
@@ -64,9 +65,9 @@ class Message(models.Model):
         return reverse('mailinglist:message-detail', kwargs={'pk': self.id})
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         if self._state.adding:
-            self.build_subscriber_messages_for_message.delay(self.id)
+            tasks.build_subscriber_messages_for_message.delay(self.id)
+        return super().save(*args, **kwargs)
 
 
 class SubscriberMessageManager(models.Manager):
