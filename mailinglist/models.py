@@ -60,6 +60,11 @@ class Message(models.Model):
     def get_absolute_url(self):
         return reverse('mailinglist:message-detail', kwargs={'pk': self.id})
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self._state.adding:
+            self.build_subscriber_messages_for_message.delay(self.id)
+
 
 class SubscriberMessageManager(models.Manager):
 
