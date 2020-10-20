@@ -36,6 +36,9 @@ class Subscriber(models.Model):
 
     objects = SubscriberManager()
 
+    def __str__(self):
+        return self.email
+
     class Meta:
         unique_together = ['email', 'mailing_list']
 
