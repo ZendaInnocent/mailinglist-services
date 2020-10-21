@@ -37,9 +37,11 @@ else:
 INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'mailinglist',
+    'api.apps.ApiConfig',
 
     'crispy_forms',
     'markdownify',
+    'rest_framework',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -155,3 +157,17 @@ MAILING_LIST_LINK_DOMAIN = 'http://localhost:8000'
 CELERY_BROKER_URL = 'amqp://localhost/'
 
 # CELERY_RESULT_BACKEND = 'django-db'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '60/minute',
+        'anon': '30/minute',
+    },
+}
