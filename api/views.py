@@ -14,6 +14,7 @@ class MailingListCreateListView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
+        # return the mailing lists owned by a loged in user.
         return self.request.user.mailinglist_set.all()
 
     def get_serializer(self, *args, **kwargs):
@@ -41,6 +42,7 @@ class SubscriberListCreateView(generics.ListCreateAPIView):
     serializer_class = SubscriberSerializer
 
     def get_queryset(self):
+        # return subscribers for a particular mailing list
         mailinglist_pk = self.kwargs['mailinglist_pk']
         mailinglist = get_object_or_404(MailingList, id=mailinglist_pk)
         return mailinglist.subscriber_set.all()
@@ -49,7 +51,9 @@ class SubscriberListCreateView(generics.ListCreateAPIView):
         if kwargs.get('data'):
             data = kwargs.get('data')
             mailinglist = {
-                'mailinglist': reverse('api::api-mailinglist-detail', kwargs={'pk': self.kwargs['mailinglist_pk']})
+                'mailinglist':
+                    reverse('api:api-mailinglist-detail',
+                            kwargs={'pk': self.kwargs['mailinglist_pk']})
             }
             data.update(mailinglist)
         return super().get_serializer(*args, **kwargs)

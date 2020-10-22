@@ -26,10 +26,8 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-if not DEBUG:
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS')
-else:
-    ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [
+                       s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -42,6 +40,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'markdownify',
     'rest_framework',
+    'rest_framework.authtoken',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -142,7 +141,7 @@ LOGIN_REDIRECT_URL = 'mailinglist:mailinglist-list'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 if not DEBUG:
-    EMAIL_HOST = 'smtp.example.com'
+    EMAIL_HOST = config('EMAIL_HOST')
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
     EMAIL_PORT = 587
@@ -170,4 +169,7 @@ REST_FRAMEWORK = {
         'user': '60/minute',
         'anon': '30/minute',
     },
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
 }
