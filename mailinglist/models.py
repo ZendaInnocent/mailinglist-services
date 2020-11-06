@@ -61,6 +61,9 @@ class Message(models.Model):
     started = models.DateTimeField(default=None, null=True)
     finished = models.DateTimeField(default=None, null=True)
 
+    def __str__(self):
+        return self.subject
+
     def get_absolute_url(self):
         return reverse('mailinglist:message-detail', kwargs={'pk': self.id})
 
