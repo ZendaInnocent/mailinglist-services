@@ -2,6 +2,9 @@ from django.contrib import admin
 
 from .models import MailingList, Message, Subscriber, SubscriberMessage
 
+admin.site.site_title = 'MailApe Admin'
+admin.site.site_header = 'MailApe Admin'
+
 
 @admin.register(MailingList)
 class MailingListAdmin(admin.ModelAdmin):
@@ -20,4 +23,5 @@ class MessagesAdmin(admin.ModelAdmin):
 
 @admin.register(SubscriberMessage)
 class SubscriberMessageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('subscriber', 'message', 'created',
+                    'last_attempt', 'sent', )
