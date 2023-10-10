@@ -11,6 +11,7 @@ django-crispy-forms = "*"
 crispy-bootstrap4 = "*"
 markdownify = "*"
 django-rest-framework = "*"
+pre-commit = "*"
 
 [dev-packages]
 pytest-django = "*"
