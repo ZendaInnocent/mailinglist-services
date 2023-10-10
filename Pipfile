@@ -13,6 +13,9 @@ markdownify = "*"
 django-rest-framework = "*"
 
 [dev-packages]
+pytest-django = "*"
+coverage = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.11"

@@ -28,17 +28,19 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')]
+    'ALLOWED_HOSTS',
+    cast=lambda hosts: [host.strip() for host in hosts.split(',')],
 )
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'accounts.apps.AccountsConfig',
+    'accounts',
     'mailinglist',
-    'api.apps.ApiConfig',
+    'api',
     'crispy_forms',
+    'crispy_bootstrap4',
     'markdownify',
     'rest_framework',
     'rest_framework.authtoken',
