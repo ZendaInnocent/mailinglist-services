@@ -1,13 +1,12 @@
-from django.contrib.auth.models import User
-from django.urls.base import reverse_lazy, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404
+from django.urls.base import reverse, reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import get_object_or_404
 
-from mailinglist.models import MailingList, Message, Subscriber
 from mailinglist.forms import MailingListForm, MessageForm, SubscriberForm
+from mailinglist.models import MailingList, Message, Subscriber
 
 
 class MailinglistListView(LoginRequiredMixin, ListView):
@@ -17,11 +16,17 @@ class MailinglistListView(LoginRequiredMixin, ListView):
         return MailingList.objects.filter(owner=self.request.user)
 
 
+mailinglist_list = MailinglistListView.as_view()
+
+
 class MailinglistDetailView(LoginRequiredMixin, DetailView):
     model = MailingList
 
     def get_queryset(self):
         return MailingList.objects.filter(owner=self.request.user)
+
+
+mailinglist_detail = MailinglistDetailView.as_view()
 
 
 class MailingListCreateView(LoginRequiredMixin, CreateView):
@@ -38,6 +43,9 @@ class MailingListCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+mailinglist_add = MailingListCreateView.as_view()
+
+
 class MailinglistUpdateView(LoginRequiredMixin, UpdateView):
     model = MailingList
     form_class = MailingListForm
@@ -51,12 +59,18 @@ class MailinglistUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
+mailinglist_update = MailinglistUpdateView.as_view()
+
+
 class MailinglistDeleteView(LoginRequiredMixin, DeleteView):
     model = MailingList
     success_url = reverse_lazy('mailinglist:mailinglist-list')
 
     def get_queryset(self):
         return MailingList.objects.filter(owner=self.request.user)
+
+
+mailinglist_delete = MailinglistDeleteView.as_view()
 
 
 class SubscribeToMailingListView(CreateView):
@@ -74,9 +88,9 @@ class SubscribeToMailingListView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('mailinglist:subscriber-thank-you', kwargs={
-            'pk': self.kwargs['pk']
-        })
+        return reverse(
+            'mailinglist:subscriber-thank-you', kwargs={'pk': self.kwargs['pk']}
+        )
 
 
 class ThankYouForSubscribingView(DetailView):
@@ -100,9 +114,9 @@ class UnsubscribeView(DeleteView):
     template_name = 'mailinglist/unsubscribe.html'
 
     def get_success_url(self):
-        return reverse('mailinglist:subscribe', kwargs={
-            'pk': self.object.mailing_list.id
-        })
+        return reverse(
+            'mailinglist:subscribe', kwargs={'pk': self.object.mailing_list.id}
+        )
 
 
 class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -118,8 +132,7 @@ class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['mailinglist'] = get_object_or_404(
-            MailingList, pk=self.kwargs['pk'])
+        context['mailinglist'] = get_object_or_404(MailingList, pk=self.kwargs['pk'])
         context['SAVE_ACTION'] = self.SAVE_ACTION
         context['PREVIEW_ACTION'] = self.PREVIEW_ACTION
         return context
@@ -127,20 +140,18 @@ class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def form_valid(self, form):
         action = self.request.POST.get('action')
         if action == self.PREVIEW_ACTION:
-            context = self.get_context_data(
-                form=form,
-                preview=form.instance
-            )
+            context = self.get_context_data(form=form, preview=form.instance)
             return self.render_to_response(context=context)
         elif action == self.SAVE_ACTION:
             form.instance.mailing_list = get_object_or_404(
-                MailingList, pk=self.kwargs['pk'])
+                MailingList, pk=self.kwargs['pk']
+            )
             return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('mailinglist:mailinglist-detail', kwargs={
-            'pk': self.kwargs['pk']
-        })
+        return reverse(
+            'mailinglist:mailinglist-detail', kwargs={'pk': self.kwargs['pk']}
+        )
 
 
 class MessageDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

@@ -4,13 +4,12 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.forms import UserCreationForm
-from accounts.models import User, Address
+from accounts.models import User
 
 logger = logging.getLogger(__name__)
 
 
 class AccountsAppViewsTest(TestCase):
-
     def test_user_registration_view_works(self):
         response = self.client.get(reverse('accounts:signup'))
 
@@ -23,13 +22,11 @@ class AccountsAppViewsTest(TestCase):
             'email': 'someone@domain.com',
             'name': 'Someone There',
             'password1': 'ofsdoadsfoisadfh9',
-            'password2': 'ofsdoadsfoisadfh9'
+            'password2': 'ofsdoadsfoisadfh9',
         }
 
-        response = self.client.post(
-            reverse('accounts:signup'), data)
+        response = self.client.post(reverse('accounts:signup'), data)
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/')
-        self.assertTrue(User.objects.filter(
-            email='someone@domain.com').exists())
+        self.assertTrue(User.objects.filter(email='someone@domain.com').exists())
