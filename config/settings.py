@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+DEBUG = config('DEBUG', cast=bool, default=False)
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -93,7 +93,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -116,13 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Dar_es_Salaam'
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 
@@ -143,17 +141,28 @@ LOGIN_REDIRECT_URL = 'mailinglist:mailinglist-list'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 if not DEBUG:
+    # the address of SMTP server to use.
     EMAIL_HOST = config('EMAIL_HOST')
+    # username used to authenticate to the SMTP server
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+    # password for the host
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
+    # port to connect to SMTP server
+    EMAIL_PORT = config('EMAIL_PORT', default=587)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True)
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_mails')
 
-MAILING_LIST_FROM_EMAIL = 'noreply@example.com'
-MAILING_LIST_LINK_DOMAIN = 'http://localhost:8000'
+# custom setting used to set the FROM header on the sent emails
+MAILING_LIST_FROM_EMAIL = config(
+    'MAILING_LIST_FROM_EMAIL', default='noreply@example.com'
+)
+
+# the domain to prefix all email templates links
+MAILING_LIST_LINK_DOMAIN = config(
+    'MAILING_LIST_LINK_DOMAIN', default='http://localhost:8000'
+)
 
 CELERY_BROKER_URL = 'amqp://localhost/'
 
