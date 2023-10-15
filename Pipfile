@@ -5,13 +5,14 @@ name = "pypi"
 
 [packages]
 django = "*"
-celery = "*"
 django-decouple = "*"
 django-crispy-forms = "*"
 crispy-bootstrap4 = "*"
 markdownify = "*"
 django-rest-framework = "*"
 pre-commit = "*"
+celery = {extras = ["redis"], version = "*"}
+django-celery-results = "*"
 
 [dev-packages]
 pytest-django = "*"

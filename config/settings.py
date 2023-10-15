@@ -36,6 +36,7 @@ ALLOWED_HOSTS = config(
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_results',
     'accounts',
     'mailinglist',
     'api',
@@ -121,7 +122,6 @@ TIME_ZONE = 'Africa/Dar_es_Salaam'
 
 USE_I18N = True
 
-
 USE_TZ = True
 
 
@@ -164,9 +164,9 @@ MAILING_LIST_LINK_DOMAIN = config(
     'MAILING_LIST_LINK_DOMAIN', default='http://localhost:8000'
 )
 
-CELERY_BROKER_URL = 'amqp://localhost/'
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
 
-# CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-db'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),

@@ -4,8 +4,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
-from mailinglist import tasks
-
 User = get_user_model()
 
 
@@ -56,11 +54,6 @@ class Message(models.Model):
     def get_absolute_url(self):
         return reverse('mailinglist:message-detail', kwargs={'pk': self.id})
 
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            tasks.build_subscriber_messages_for_message.delay(self.id)
-        return super().save(*args, **kwargs)
-
 
 class SubscriberMessageManager(models.Manager):
     def create_from_message(self, message):
@@ -86,11 +79,3 @@ class SubscriberMessage(models.Model):
     last_attempt = models.DateTimeField(null=True, default=None)
 
     objects = SubscriberMessageManager()
-
-    def send(self):
-        tasks.send_subscriber_message.delay(self.id)
-
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            self.send()
-        return super().save(*args, **kwargs)
