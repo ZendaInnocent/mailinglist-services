@@ -41,15 +41,6 @@ class Subscriber(models.Model):
     class Meta:
         unique_together = ['email', 'mailing_list']
 
-    def send_confirmation_email(self):
-        return tasks.send_confirmation_email_to_subscriber.delay(self.id)
-
-    def save(self, *args, **kwargs):
-        # send confirmation email to new Subscriber
-        if self._state.adding:
-            self.send_confirmation_email()
-        return super().save(*args, **kwargs)
-
 
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
