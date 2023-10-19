@@ -20,7 +20,7 @@ source .venv/bin/activate # linux, macos
 
 ### Install the dependencies
 ```
-pipenv sync
+pipenv install --dev
 
 # Project also use pre-commit, make sure to run
 pre-commit install
