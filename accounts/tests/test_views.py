@@ -1,7 +1,7 @@
 import logging
 
-from django.test import TestCase
 from django.urls import reverse
+from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from accounts.forms import UserCreationForm
 from accounts.models import User
@@ -9,24 +9,24 @@ from accounts.models import User
 logger = logging.getLogger(__name__)
 
 
-class AccountsAppViewsTest(TestCase):
-    def test_user_registration_view_works(self):
-        response = self.client.get(reverse('accounts:signup'))
+def test_user_registration_view_works(client):
+    response = client.get(reverse('accounts:signup'))
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'registration/signup.html')
-        self.assertIsInstance(response.context['form'], UserCreationForm)
+    assert response.status_code == 200
+    assertTemplateUsed(response, 'registration/signup.html')
+    assert isinstance(response.context['form'], UserCreationForm)
 
-    def test_user_registration_view_submission_works(self):
-        data = {
-            'email': 'someone@domain.com',
-            'name': 'Someone There',
-            'password1': 'ofsdoadsfoisadfh9',
-            'password2': 'ofsdoadsfoisadfh9',
-        }
 
-        response = self.client.post(reverse('accounts:signup'), data)
+def test_user_registration_view_submission_works(client):
+    data = {
+        'email': 'someone@domain.com',
+        'name': 'Someone There',
+        'password1': 'ofsdoadsfoisadfh9',
+        'password2': 'ofsdoadsfoisadfh9',
+    }
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/')
-        self.assertTrue(User.objects.filter(email='someone@domain.com').exists())
+    response = client.post(reverse('accounts:signup'), data)
+
+    assert response.status_code == 302
+    assertRedirects(response, '/accounts/pending-registration/')
+    assert User.objects.filter(email='someone@domain.com').exists()
