@@ -163,6 +163,7 @@ MAILING_LIST_LINK_DOMAIN = config(
     'MAILING_LIST_LINK_DOMAIN', default='http://localhost:8000'
 )
 
+# Celery Configuration Options
 CELERY_BROKER_URL = 'redis://localhost:6379/1'
 
 CELERY_RESULT_BACKEND = 'django-db'

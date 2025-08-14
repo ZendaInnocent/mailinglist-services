@@ -83,20 +83,18 @@ class SubscribeToMailingListView(generic.CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        self.mailing_list = MailingList.objects.get(pk=self.kwargs['pk'])
-        context['mailinglist'] = self.mailing_list
+        context['mailinglist'] = MailingList.objects.get(pk=self.kwargs['pk'])
         return context
 
     def form_valid(self, form):
-        mailing_list = self.mailing_list
-        form.instance.mailing_list = mailing_list
+        form.instance.mailing_list = MailingList.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy(
             'mailinglist:subscriber-thank-you',
             kwargs={
-                'pk': self.mailing_list.pk,
+                'pk': self.kwargs['pk'],
             },
         )
 
@@ -161,13 +159,16 @@ class MessageCreateView(
             context = self.get_context_data(form=form, preview=form.instance)
             return self.render_to_response(context=context)
         elif action == self.SAVE_ACTION:
-            form.instance.mailing_list = self.mailing_list
+            form.instance.mailing_list = get_object_or_404(
+                MailingList,
+                pk=self.kwargs['pk'],
+            )
             return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy(
             'mailinglist:mailinglist-detail',
-            kwargs={'pk': self.mailing_list.pk},
+            kwargs={'pk': self.kwargs['pk']},
         )
 
 

@@ -19,7 +19,7 @@
       <a class="btn btn-success"
          href="{% url 'mailinglist:message-create' object.id %}">New Message</a>
       <ul class="pt-3">
-        {% for message in object.message_set.all %}
+        {% for message in object.messages.all %}
           <li>
             <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
           </li>
@@ -29,7 +29,7 @@
     <div>
       <h2>Subscribers</h2>
       <ul>
-        {% for subscriber in object.subscriber_set.all %}
+        {% for subscriber in object.subscribers.all %}
           <li>
             {{ subscriber.email }}
             {{ subscriber.confirmed | yesno | capfirst }}

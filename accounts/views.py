@@ -8,7 +8,6 @@ from django.views.generic import CreateView, TemplateView
 
 from accounts import forms
 
-from . import tasks
 from .tokens import account_activation_token
 
 User = get_user_model()
@@ -22,11 +21,6 @@ class UserRegistrationView(SuccessMessageMixin, CreateView):
         'A confirmation email has been sent to your email'
         '. Please confirm to finish registration.'
     )
-
-    def form_valid(self, form):
-        form.save()
-        tasks.send_registration_confirmation_mail.delay(form.instance.id)
-        return super().form_valid(form)
 
 
 class PendingRegistration(TemplateView):
