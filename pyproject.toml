@@ -1,0 +1,26 @@
+[project]
+name = "mailinglist-manager"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "celery>=5.4.0",
+    "crispy-bootstrap4>=2024.10",
+    "django-crispy-forms>=2.3",
+    "django>=5.1.2",
+    "djangorestframework>=3.15.2",
+    "markdownify>=0.13.1",
+    "python-decouple>=3.8",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.uv]
+dev-dependencies = [
+    "djlint>=1.36.4",
+    "pre-commit>=4.0.1",
+    "pytest-cov>=5.0.0",
+    "pytest-django>=4.9.0",
+]
