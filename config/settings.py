@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-from decouple import config
+from decouple import Csv, config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,12 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+DEBUG = config('DEBUG', cast=bool, default=False)
 
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    cast=lambda hosts: [host.strip() for host in hosts.split(',')],
-)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 # Application definition
@@ -118,11 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Dar_es_Salaam'
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 
@@ -131,6 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -140,6 +137,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_REDIRECT_URL = 'mailinglist:mailinglist-list'
+
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 if not DEBUG:
@@ -153,6 +151,7 @@ else:
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_mails')
 
 MAILING_LIST_FROM_EMAIL = 'noreply@example.com'
+
 MAILING_LIST_LINK_DOMAIN = 'http://localhost:8000'
 
 CELERY_BROKER_URL = 'amqp://localhost/'

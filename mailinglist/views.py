@@ -1,42 +1,42 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
-from django.urls.base import reverse, reverse_lazy
-from django.views.generic import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.urls.base import reverse_lazy
+from django.views import generic
 
 from mailinglist.forms import MailingListForm, MessageForm, SubscriberForm
+from mailinglist.mixins import MailingListMixin
 from mailinglist.models import MailingList, Message, Subscriber
 
 
-class MailinglistListView(LoginRequiredMixin, ListView):
+class MailinglistListView(
+    LoginRequiredMixin,
+    MailingListMixin,
+    generic.ListView,
+):
     model = MailingList
-
-    def get_queryset(self):
-        return MailingList.objects.filter(owner=self.request.user)
 
 
 mailinglist_list = MailinglistListView.as_view()
 
 
-class MailinglistDetailView(LoginRequiredMixin, DetailView):
+class MailinglistDetailView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.DetailView,
+):
     model = MailingList
 
-    def get_queryset(self):
-        return MailingList.objects.filter(owner=self.request.user)
+    def test_func(self):
+        return self.get_object().owner == self.request.user
 
 
 mailinglist_detail = MailinglistDetailView.as_view()
 
 
-class MailingListCreateView(LoginRequiredMixin, CreateView):
+class MailingListCreateView(LoginRequiredMixin, generic.CreateView):
     model = MailingList
     form_class = MailingListForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Add'
-        return context
+    extra_context = {'page_title': 'Add'}
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -46,59 +46,67 @@ class MailingListCreateView(LoginRequiredMixin, CreateView):
 mailinglist_add = MailingListCreateView.as_view()
 
 
-class MailinglistUpdateView(LoginRequiredMixin, UpdateView):
+class MailinglistUpdateView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.UpdateView,
+):
     model = MailingList
     form_class = MailingListForm
+    extra_context = {'page_title': 'Edit'}
 
-    def get_queryset(self):
-        return MailingList.objects.filter(owner=self.request.user)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Edit'
-        return context
+    def test_func(self):
+        return self.get_object().owner == self.request.user
 
 
 mailinglist_update = MailinglistUpdateView.as_view()
 
 
-class MailinglistDeleteView(LoginRequiredMixin, DeleteView):
+class MailinglistDeleteView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.DeleteView,
+):
     model = MailingList
     success_url = reverse_lazy('mailinglist:mailinglist-list')
 
-    def get_queryset(self):
-        return MailingList.objects.filter(owner=self.request.user)
+    def test_func(self):
+        return self.get_object().owner == self.request.user
 
 
 mailinglist_delete = MailinglistDeleteView.as_view()
 
 
-class SubscribeToMailingListView(CreateView):
+class SubscribeToMailingListView(generic.CreateView):
     model = Subscriber
     form_class = SubscriberForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['mailinglist'] = MailingList.objects.get(pk=self.kwargs['pk'])
+        self.mailing_list = MailingList.objects.get(pk=self.kwargs['pk'])
+        context['mailinglist'] = self.mailing_list
         return context
 
     def form_valid(self, form):
-        mailinglist = MailingList.objects.get(pk=self.kwargs['pk'])
-        form.instance.mailing_list = mailinglist
+        mailing_list = self.mailing_list
+        form.instance.mailing_list = mailing_list
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            'mailinglist:subscriber-thank-you', kwargs={'pk': self.kwargs['pk']}
+        return reverse_lazy(
+            'mailinglist:subscriber-thank-you',
+            kwargs={
+                'pk': self.mailing_list.pk,
+            },
         )
 
 
-class ThankYouForSubscribingView(DetailView):
+class ThankYouForSubscribingView(generic.DetailView):
     model = MailingList
     template_name = 'mailinglist/subscription_thank_you.html'
 
 
-class ConfirmSubscriptionView(DetailView):
+class ConfirmSubscriptionView(generic.DetailView):
     model = Subscriber
     template_name = 'mailinglist/confirm_subscription.html'
 
@@ -109,17 +117,22 @@ class ConfirmSubscriptionView(DetailView):
         return subscriber
 
 
-class UnsubscribeView(DeleteView):
+class UnsubscribeView(generic.DeleteView):
     model = Subscriber
     template_name = 'mailinglist/unsubscribe.html'
 
     def get_success_url(self):
-        return reverse(
-            'mailinglist:subscribe', kwargs={'pk': self.object.mailing_list.id}
+        return reverse_lazy(
+            'mailinglist:subscribe',
+            kwargs={'pk': self.get_object().mailing_list.id},
         )
 
 
-class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class MessageCreateView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.CreateView,
+):
     SAVE_ACTION = 'save'
     PREVIEW_ACTION = 'preview'
 
@@ -132,7 +145,12 @@ class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['mailinglist'] = get_object_or_404(MailingList, pk=self.kwargs['pk'])
+        self.mailing_list = get_object_or_404(
+            MailingList,
+            pk=self.kwargs['pk'],
+        )
+
+        context['mailinglist'] = self.mailing_list
         context['SAVE_ACTION'] = self.SAVE_ACTION
         context['PREVIEW_ACTION'] = self.PREVIEW_ACTION
         return context
@@ -143,18 +161,21 @@ class MessageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             context = self.get_context_data(form=form, preview=form.instance)
             return self.render_to_response(context=context)
         elif action == self.SAVE_ACTION:
-            form.instance.mailing_list = get_object_or_404(
-                MailingList, pk=self.kwargs['pk']
-            )
+            form.instance.mailing_list = self.mailing_list
             return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            'mailinglist:mailinglist-detail', kwargs={'pk': self.kwargs['pk']}
+        return reverse_lazy(
+            'mailinglist:mailinglist-detail',
+            kwargs={'pk': self.mailing_list.pk},
         )
 
 
-class MessageDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class MessageDetailView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    generic.DetailView,
+):
     model = Message
 
     def test_func(self):

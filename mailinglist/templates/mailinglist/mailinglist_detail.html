@@ -1,40 +1,42 @@
 {% extends 'base.html' %}
-
 {% block title %}
-{{ object.name }} Management - {{ block.super }}
+  {{ object.name }} Management - {{ block.super }}
 {% endblock title %}
-
 {% block content %}
-<div class="container py-3">
-  <h1>{{ object.name }} Management
-    <a class="btn btn-danger" href="{% url 'mailinglist:mailinglist-delete' object.id %}">Delete</a></h1>
-
-  <div>
-    <a href="{% url 'mailinglist:subscribe' object.id %}">Subscription Link</a>
+  <div class="container py-3">
+    <h1>
+      {{ object.name }} Management
+      <a class="btn btn-success"
+         href="{% url 'mailinglist:mailinglist-update' object.id %}">Edit</a>
+      <a class="btn btn-danger"
+         href="{% url 'mailinglist:mailinglist-delete' object.id %}">Delete</a>
+    </h1>
+    <div>
+      <a href="{% url 'mailinglist:subscribe' object.id %}">Subscription Link</a>
+    </div>
+    <div>
+      <h2>Messages</h2>
+      <a class="btn btn-success"
+         href="{% url 'mailinglist:message-create' object.id %}">New Message</a>
+      <ul class="pt-3">
+        {% for message in object.message_set.all %}
+          <li>
+            <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div>
+      <h2>Subscribers</h2>
+      <ul>
+        {% for subscriber in object.subscriber_set.all %}
+          <li>
+            {{ subscriber.email }}
+            {{ subscriber.confirmed | yesno | capfirst }}
+            <a href="{% url 'mailinglist:unsubscribe' subscriber.id %}">Unsubscribe</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
-
-  <div>
-    <h2>Messages</h2> <a class="btn btn-success" href="{% url 'mailinglist:message-create' object.id %}">New Message</a>
-    <ul class="pt-3">
-      {% for message in object.message_set.all %}
-      <li>
-        <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-
-  <div>
-    <h2>Subscribers</h2>
-    <ul>
-      {% for subscriber in object.subscriber_set.all %}
-      <li>
-        {{ subscriber.email }}
-        {{ subscriber.confirmed | yesno | capfirst }}
-        <a href="{% url 'mailinglist:unsubscribe' subscriber.id %}">Unsubscribe</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-</div>
 {% endblock content %}

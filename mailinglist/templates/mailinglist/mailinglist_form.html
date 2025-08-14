@@ -1,17 +1,15 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-
 {% block title %}
-Create Mailing List - {{ block.super }}
+  {{ page_title }} Mailinglist - {{ block.super }}
 {% endblock title %}
-
 {% block content %}
-<div class="container py-3">
-  <h1>{{ page_title }} Mailing List</h1>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form | crispy }}
-    <button class="btn btn-primary">{{ page_title }} Mailinglist</button>
-  </form>
-</div>
+  <div class="container py-3">
+    <h1>{{ page_title }} Mailing List</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form | crispy }}
+      <button class="btn btn-primary">Save</button>
+    </form>
+  </div>
 {% endblock content %}
